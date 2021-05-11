@@ -1,7 +1,7 @@
 v 3
 d David M. Kaplan, University of Missouri (Economics)
 d Also see: R code and papers at
-d           {browse "http://davkapl.github.io/"}
+d           {browse "https://kaplandm.github.io/"}
 d Support: kaplandm@missouri.edu
 
 p distcomp Comparing distributions

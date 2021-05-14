@@ -1,11 +1,11 @@
 v 3
 d distcomp: Comparing distributions
-d {browse "https://faculty.missouri.edu/~kaplandm":David M. Kaplan}, University of Missouri (Economics)
+d {browse "https://kaplandm.github.io":David M. Kaplan}, University of Missouri (Economics)
 d Based on: Goldman, M., and Kaplan, D. M. (2018). Comparing distributions by multiple testing across quantiles or CDF values. {it:Journal of Econometrics}, 206(1):143-166.
 d URL: {browse "https://doi.org/10.1016/j.jeconom.2018.04.003"}
 d Distribution-Date: 20190520
 d Support: kaplandm@missouri.edu
-f code/distcomp.ado
-f code/distcomp.sthlp
-f code/distcomp_examples.do
+f distcomp.ado
+f distcomp.sthlp
+f distcomp_examples.do
 e

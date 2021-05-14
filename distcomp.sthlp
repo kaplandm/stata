@@ -178,7 +178,7 @@ Note: if none rejected, then this is a 1-by-2 matrix with . as each entry.{p_end
 {title:Remarks}
 
 {pstd}
-R code (with additional functionality), including code to replicate results from the paper, and a working paper version are available at: {browse "https://faculty.missouri.edu/kaplandm"}
+R code (with additional functionality), including code to replicate results from the paper, and a working paper version are available at: {browse "https://kaplandm.github.io"}
 
 
 {marker examples}{...}
@@ -197,7 +197,7 @@ Additional examples are in the distcomp_examples.do file.
 
 {pstd}
 David M. Kaplan{break}Department of Economics, University of Missouri{break}
-kaplandm@missouri.edu{break}{browse "https://faculty.missouri.edu/kaplandm"}
+kaplandm@missouri.edu{break}{browse "https://kaplandm.github.io"}
 
 {marker references}
 {title:References}

@@ -77,7 +77,7 @@ The methodology was proposed and studied by {help sivqr##KS2017:Kaplan and Sun (
 {dlgtab:Model}
 
 {phang}
-{opt quantile(#)} specifies the quantile to be estimated and should be a number between 0 and 1, exclusive, or alternatively a number between $1$ and $100$ interpreted as a percentile.  For example, {cmd:quantile(0.5)} corresponds to the median, as does {cmd:quantile(50)}.
+{opt quantile(#)} specifies the quantile to be estimated and should be a number between 0 and 1, exclusive, or alternatively a number between 1 and 100 interpreted as a percentile.  For example, {cmd:quantile(0.5)} corresponds to the median, as does {cmd:quantile(50)}.
 
 {phang}
 {opt bandwidth(#)} specifies the desired smoothing bandwidth.  If a numerical solution cannot be found with the desired bandwidth, then the bandwidth is increased (as little as possible) until it can.  For example, {cmd:bandwidth(0)} uses the smallest possible amount of smoothing.  Alternatively, any negative value like the default {cmd:bandwidth(-1)} invokes a plug-in bandwidth derived from {help sivqr##KS2017:Kaplan and Sun (2017)}.  Though not optimal in every case, the plug-in bandwidth tries to minimize the estimator's mean squared error and has performed well in simulations, and it often greatly reduces computation time compared to {cmd:bandwidth(0)}.
@@ -177,7 +177,7 @@ Additional examples are in the sivqr_examples.do file.
 
 {pstd}
 David M. Kaplan{break}Department of Economics, University of Missouri{break}
-kaplandm@missouri.edu{break}{browse "https://faculty.missouri.edu/kaplandm"}
+kaplandm@missouri.edu{break}{browse "https://kaplandm.github.io"}
 
 {marker references}
 {title:References}

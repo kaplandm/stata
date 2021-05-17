@@ -9,7 +9,7 @@
 * ^detailed in Stata Journal article
 
 * To install:
-*net from http://faculty.missouri.edu/kaplandm
+*net from https://kaplandm.github.io/stata
 *net describe sivqr
 *net install sivqr
 *net get sivqr

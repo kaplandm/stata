@@ -7,7 +7,7 @@
 
 
 * To install:
-*net from http://faculty.missouri.edu/~kaplandm
+*net from https://kaplandm.github.io/stata
 *net describe distcomp
 *net install distcomp
 *net get distcomp
@@ -15,7 +15,7 @@
 
 * Specify directory w/ distcomp.ado (if not already in a standard directory; use command
 *    sysdir   to check standard directories.
-*cd "C:\Users\kaplandm\Box Sync\public_html\code"
+*cd "C:\Users\kaplandm\code"
 
 *.tex output:  sjlog do distcomp_examples , clear replace
 

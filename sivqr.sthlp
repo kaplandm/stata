@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 0.1  10oct2020}{...}
+{* *! version 1.0  23jun2021}{...}
 {vieweralsosee "[R] ivregress" "help ivregress"}{...}
 {vieweralsosee "[R] qreg" "help qreg"}{...}
 {viewerjumpto "Syntax" "sivqr##syntax"}{...}

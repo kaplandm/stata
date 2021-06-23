@@ -53,6 +53,7 @@ As in {helpb ivregress}, {it:varlist1} is the list of exogenous regressors (or c
 
 {syntab:Advanced}
 {synopt :{opt seed(#)}}set random-number seed to #{p_end}
+{synopt :{opt init:ial(matname)}}manually set initial coefficient values for numerical search{p_end}
 {synoptline}
 {p2colreset}{...}
 {p 4 6 2}{bf:by} is allowed; see {help by}.{p_end}
@@ -77,12 +78,18 @@ The methodology was proposed and studied by {help sivqr##KS2017:Kaplan and Sun (
 {dlgtab:Model}
 
 {phang}
-{opt quantile(#)} specifies the quantile to be estimated and should be a number between 0 and 1, exclusive, or alternatively a number between 1 and 100 interpreted as a percentile.  For example, {cmd:quantile(0.5)} corresponds to the median, as does {cmd:quantile(50)}.
+{opt quantile(#)} specifies the quantile to be estimated and should be a number between 0 and 1, exclusive, or alternatively a number between 1 and 100 interpreted as a percentile.
+For example, {cmd:quantile(0.5)} corresponds to the median, as does {cmd:quantile(50)}.
 
 {phang}
-{opt bandwidth(#)} specifies the desired smoothing bandwidth.  If a numerical solution cannot be found with the desired bandwidth, then the bandwidth is increased (as little as possible) until it can.  For example, {cmd:bandwidth(0)} uses the smallest possible amount of smoothing.  Alternatively, any negative value like the default {cmd:bandwidth(-1)} invokes a plug-in bandwidth derived from {help sivqr##KS2017:Kaplan and Sun (2017)}.  Though not optimal in every case, the plug-in bandwidth tries to minimize the estimator's mean squared error and has performed well in simulations, and it often greatly reduces computation time compared to {cmd:bandwidth(0)}.
+{opt bandwidth(#)} specifies the desired smoothing bandwidth.
+If a numerical solution cannot be found with the desired bandwidth, then the bandwidth is increased (as little as possible) until it can.
+For example, {cmd:bandwidth(0)} uses the smallest possible amount of smoothing.
+Alternatively, any negative value like the default {cmd:bandwidth(-1)} invokes a plug-in bandwidth derived from {help sivqr##KS2017:Kaplan and Sun (2017)}.
+Though not optimal in every case, the plug-in bandwidth tries to minimize the estimator's mean squared error and has performed well in simulations, and it often greatly reduces computation time compared to {cmd:bandwidth(0)}.
 
-{phang}{opt reps(#)} specifies the number of bootstrap replications for estimating the variance-covariance matrix and standard errors.  The default {cmd:reps(20)} is usually fine for exploratory analysis but should be increased for the final analysis.
+{phang}{opt reps(#)} specifies the number of bootstrap replications for estimating the variance-covariance matrix and standard errors.
+The default {cmd:reps(20)} is usually fine for exploratory analysis but should be increased for the final analysis.
 Common choices are in the hundreds or thousands, depending on computation time and patience.
 The Bayesian bootstrap of {help sivqr##R1981:Rubin (1981)} is used; it is a valid frequentist bootstrap that also has a nonparametric Bayesian interpretation.
 
@@ -97,7 +104,7 @@ The Bayesian bootstrap of {help sivqr##R1981:Rubin (1981)} is used; it is a vali
 {helpb estimation options##level():[R] estimation options}.
 
 {phang}
-{opt logiterations} displays each iteration of the numerical solver, solvenl(), for the main estimation.  Usually this is not valuable information.
+{opt logiterations} displays each iteration of the numerical solver, {helpb mf_solvenl:solvenl()}, for the main estimation.  Usually this is not valuable information.
 
 {phang}
 {opt nodots} suppresses display of the replication dots (as in {helpb bootstrap})
@@ -106,6 +113,10 @@ The Bayesian bootstrap of {help sivqr##R1981:Rubin (1981)} is used; it is a vali
 
 {phang}
 {opt seed(#)} sets the random-number seed (as in {helpb bootstrap}).
+
+{phang}
+{opt initialize(matname)} sets the initial coefficient values for the numerical search, using the values stored in the matrix (row vector) named {it:matname}.
+If not specified, then {cmd:qreg} is used to generate initial values.
 
 
 {marker examples}{...}

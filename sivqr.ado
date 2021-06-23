@@ -15,7 +15,7 @@ program sivqr, eclass properties(svyb) byable(recall)
   }
 
   * Parse rest of arguments
-  syntax [if] [in] [pweight iweight fweight/] , Quantile(real) [Bandwidth(real -1) Level(cilevel) Reps(integer 20) LOGiterations noCONstant SEED(integer 112358) noDOTS]
+  syntax [if] [in] [pweight iweight fweight/] , Quantile(real) [Bandwidth(real -1) Level(cilevel) Reps(integer 20) LOGiterations noCONstant SEED(integer 112358) INITial(string) noDOTS]
   if (`quantile'<=0) {
     di as error "{bf:quantile(`quantile')} is out of range; must be >0"
     exit 198
@@ -61,18 +61,27 @@ program sivqr, eclass properties(svyb) byable(recall)
   }
 
   * Main subroutine call
-  tempname sivqrb sivqrV sivqrh sivqrhhat
-  * qreg doesn't support noconstant, so adjust later (in Mata)
-  if ("`weight'"!="") {
-    * Using aweight so can use Stata version 11; o/w need Stata 12 for pw/iw
-    qui qreg ``lhs'' ``Xendo'' ``Xexog'' [aw=`exp'] , quantile(`quantile')
+  tempname sivqrb sivqrV sivqrh sivqrhhat initname
+  if ("`initial'"=="") {
+    * qreg doesn't support noconstant, so adjust after
+    if ("`weight'"!="") {
+      * Using aweight so can use Stata version 11; o/w need Stata 12 for pw/iw
+      qui qreg ``lhs'' ``Xendo'' ``Xexog'' [aw=`exp'] , quantile(`quantile')
+    }
+    else {
+      qui qreg ``lhs'' ``Xendo'' ``Xexog'' , quantile(`quantile')
+    }
+    matrix `initname' = e(b)
+    if ("`constant'"=="noconstant") {
+      matrix `initname' = `initname'[1,1..(colsof(`initname')-1)]
+    }
   }
   else {
-    qui qreg ``lhs'' ``Xendo'' ``Xexog'' , quantile(`quantile')
+    matrix `initname' = `initial'
   }
   tempname seedname
   local `seedname' = c(seed)
-  mata: sivqrmain("``lhs''", "``Xendo''", "``Xexog''", "``Zexcl''", "`touse'", `quantile', `bandwidth', `reps', "`logiterations'"=="logiterations", "`constant'"=="noconstant", "`wgtvar'", `seed', "`dots'"=="nodots", "`sivqrb'", "`sivqrV'", "`sivqrh'", "`sivqrhhat'")
+  mata: sivqrmain("``lhs''", "``Xendo''", "``Xexog''", "``Zexcl''", "`touse'", `quantile', `bandwidth', `reps', "`logiterations'"=="logiterations", "`constant'"=="noconstant", "`wgtvar'", `seed', "`dots'"=="nodots", "`sivqrb'", "`sivqrV'", "`sivqrh'", "`sivqrhhat'", "`initname'")
   set seed ``seedname''
 
   * Store return values
@@ -147,7 +156,7 @@ end
 *
 *
 mata:
-void sivqrmain(string scalar Yname, string matrix Dname, string matrix Xexogname, string matrix Zexclname, string scalar touse, real scalar tau, real scalar h, real scalar reps, real scalar logiterations, real scalar noconst, string scalar wgtname, real scalar seed, real scalar nodots, string scalar sivqrbname, string scalar sivqrVname, string scalar sivqrhname, string scalar sivqrhhatname) {
+void sivqrmain(string scalar Yname, string matrix Dname, string matrix Xexogname, string matrix Zexclname, string scalar touse, real scalar tau, real scalar h, real scalar reps, real scalar logiterations, real scalar noconst, string scalar wgtname, real scalar seed, real scalar nodots, string scalar sivqrbname, string scalar sivqrVname, string scalar sivqrhname, string scalar sivqrhhatname, string scalar binitname) {
   real colvector Y, binit, weights, sivqrb, wstar, IQRs
   real matrix D, Xexog, Zexcl, Z, X, tmp, bstars, corrmat
   real scalar n, hhat, db, sivqrh, i, junk, k25, k75, eps25, eps75, p25, p75, N01iqr
@@ -158,13 +167,9 @@ void sivqrmain(string scalar Yname, string matrix Dname, string matrix Xexogname
     iterlog = "on"
   }
 
-  // initial value from qreg
-  binit = st_matrix("e(b)")' // transposed to be colvector
+  // initial value (from user or else qreg)
+  binit = st_matrix(binitname)' // transposed to be colvector
   db = length(binit)
-  if (noconst) {
-    db = db-1
-    binit = binit[1..db]
-  }
   st_eclear()
   st_rclear()
 
@@ -193,6 +198,13 @@ void sivqrmain(string scalar Yname, string matrix Dname, string matrix Xexogname
     if (noconst) { // same but no intercept/constant term
       Z = (Xexog, Z*invsym(quadcross(Z,Z))*quadcross(Z,D) )
     }
+  }
+
+  if (db<cols(X)) {
+    _error("The matrix (row vector) named in the initial() option is too short.")
+  }
+  else if (db>cols(X)) {
+    _error("The matrix (row vector) named in the initial() option is too long.")
   }
 
   if (h<0) {

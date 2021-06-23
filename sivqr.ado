@@ -1,4 +1,4 @@
-*! version 0.2 14may2021
+*! version 1.0 23jun2021
 program sivqr, eclass properties(svyb) byable(recall)
  version 11
  if (!replay()) {

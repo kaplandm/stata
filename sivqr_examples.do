@@ -128,13 +128,13 @@ matrix list res , f(%9.0g)
 *
 * cluster bootstrap with sivqr (same est, new std err)
 ivregress 2sls ln_wage c.age##c.age birth_yr grade (tenure = union wks_work msp) , vce(cluster idcode)
-timer on 17 // ~ XXX minutes total
+timer on 17 // ~ 25 minutes total
 bootstrap , reps(100) cluster(idcode) idcluster(newid) seed(112358) : sivqr ln_wage c.age##c.age birth_yr grade (tenure = union wks_work msp) , quantile(0.25)
 timer off 17
-timer on 18 // ~ 10-15 minutes total (~8s/rep)
+timer on 18 // ~ 10-15 minutes total
 bootstrap , reps(100) cluster(idcode) idcluster(newid) seed(112358) : sivqr ln_wage c.age##c.age birth_yr grade (tenure = union wks_work msp) , quantile(0.50)
 timer off 18
-timer on 19 // ~ XXX minutes total
+timer on 19 // ~ 25-30 minutes total
 bootstrap , reps(100) cluster(idcode) idcluster(newid) seed(112358) : sivqr ln_wage c.age##c.age birth_yr grade (tenure = union wks_work msp) , quantile(0.75)
 timer off 19
 timer list

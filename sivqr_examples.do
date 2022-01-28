@@ -54,31 +54,31 @@ generate agesq = age^2
 matrix res = J(3,5,.)
 timer clear
 * first with plug-in bandwidth (default/recommended)
-timer on 20
-timer on 21 // ~ XXX seconds
+timer on 20 // under 1 min total
+timer on 21 // ~ 5 seconds
 sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.25)
 matrix res[1,2] = _b[tenure]
 timer off 21
-timer on 22 // ~ XXX seconds
+timer on 22 // ~ 5 seconds
 sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.50)
 matrix res[2,2] = _b[tenure]
 timer off 22
-timer on 23 // ~ XXX seconds
+timer on 23 // ~ 5 seconds
 sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.75)
 matrix res[3,2] = _b[tenure]
 timer off 23
 timer off 20
 * now with bandwidth(0)
-timer on 30 // ~ XXX seconds
-timer on 31 // ~ XXX seconds
+timer on 30 // total ~ 7 minutes
+timer on 31 // ~ 4 minutes
 sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.25) bandwidth(0)
 matrix res[1,3] = _b[tenure]
 timer off 31
-timer on 32 // ~ XXX seconds
+timer on 32 // ~ 1 minute
 sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.50) bandwidth(0)
 matrix res[2,3] = _b[tenure]
 timer off 32
-timer on 33 // ~ XXX seconds
+timer on 33 // ~ 2 minutes
 sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.75) bandwidth(0)
 matrix res[3,3] = _b[tenure]
 timer off 33

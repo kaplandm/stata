@@ -15,7 +15,7 @@ program sivqr, eclass properties(svyb) byable(recall)
   }
 
   * Parse rest of arguments
-  syntax [if] [in] [pweight iweight fweight/] , Quantile(real) [Bandwidth(real) Level(cilevel) Reps(integer 0) LOGiterations noCONstant SEED(integer 112358) INITial(string) noDOTS]
+  syntax [if] [in] [pweight iweight fweight/] , Quantile(real) [Bandwidth(real -112358) Level(cilevel) Reps(integer 0) LOGiterations noCONstant SEED(integer 112358) INITial(string) noDOTS]
   if (`quantile'<=0) {
     di as error "{bf:quantile(`quantile')} is out of range: must be >0"
     exit 198
@@ -35,12 +35,10 @@ program sivqr, eclass properties(svyb) byable(recall)
     // di as text "Note: computing analytic standard errors (not bootstrap) because reps<2"
     local reps 0
   }
-  if ("`bandwidth'"=="") {
-    // di as text "Computing plug-in bandwidth"
+  if (`bandwidth'==-112358) {
     if ("`weight'"!="") {
       di as text "Warning: plug-in bandwidth ignores weights (assumes iid)"
     }
-    local bandwidth = -1
   }
   else if (`bandwidth'<0) {
     di as error "{bf:bandwidth(`bandwidth')} is out of range: must be non-negative real number"

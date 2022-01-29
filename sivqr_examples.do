@@ -45,13 +45,19 @@ which ivqreg2
 *********
 * https://www.stata.com/manuals13/rivregress.pdf
 webuse nlswork , clear
+matrix res = J(3,5,.)
+*
+ivregress 2sls ln_wage c.age##c.age birth_yr grade (tenure = union wks_work msp) , vce(cluster idcode)
+matrix res[1,1] = _b[tenure]
+matrix res[2,1] = _b[tenure]
+matrix res[3,1] = _b[tenure]
+*
 // newid/bootstrap: see https://www.stata.com/support/faqs/statistics/bootstrap-with-panel-data/
 generate newid = idcode
 xtset newid year
 *
 // other IVQR commands don't support c.age##c.age, so:
 generate agesq = age^2
-matrix res = J(3,5,.)
 timer clear
 * first with plug-in bandwidth (default/recommended)
 timer on 20 // under 1 min total
@@ -111,11 +117,6 @@ matrix res[2,5] = tmp[1,1]
 matrix tmp = e(b_75)
 matrix res[3,5] = tmp[1,1]
 timer off 50
-*
-ivregress 2sls ln_wage c.age##c.age birth_yr grade (tenure = union wks_work msp) , vce(cluster idcode)
-matrix res[1,1] = _b[tenure]
-matrix res[2,1] = _b[tenure]
-matrix res[3,1] = _b[tenure]
 *
 matrix rownames res = q25 q50 q75
 matrix colnames res = 2SLS sivqr sivqr0 ivqreg ivqreg2

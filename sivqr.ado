@@ -148,6 +148,7 @@ program sivqr, eclass properties(svyb) byable(recall)
  }
 
   * Print results header; see https://www.stata.com/manuals13/pdisplay.pdf
+  di as text ""
   di as text "Smoothed instrumental variables quantile regression (SIVQR)" ///
      as text "   Quantile = "                   as result trim("`: display %6.0g e(q)'")
   di as text "Smoothing bandwidth used = "      as result %-9.0g e(bwidth) ///

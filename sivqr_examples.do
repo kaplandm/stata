@@ -61,50 +61,37 @@ generate agesq = age^2
 timer clear
 * first with plug-in bandwidth (default/recommended)
 timer on 20 // under 1 min total
-timer on 21 // ~ 5 seconds
-sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.25)
-matrix res[1,2] = _b[tenure]
-timer off 21
-timer on 22 // ~ 5 seconds
-sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.50)
-matrix res[2,2] = _b[tenure]
-timer off 22
-timer on 23 // ~ 5 seconds
-sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.75)
-matrix res[3,2] = _b[tenure]
-timer off 23
+forvalues i = 1/3 {
+  local q = `i'/4
+  timer on 2`i'
+  sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(`q')
+  matrix res[`i',2] = _b[tenure]
+  timer off 2`i'
+}
 timer off 20
 * now with bandwidth(0)
-timer on 30 // total ~ 7 minutes
-timer on 31 // ~ 4 minutes
-sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.25) bandwidth(0)
-matrix res[1,3] = _b[tenure]
-timer off 31
-timer on 32 // ~ 1 minute
-sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.50) bandwidth(0)
-matrix res[2,3] = _b[tenure]
-timer off 32
-timer on 33 // ~ 2 minutes
-sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(0.75) bandwidth(0)
-matrix res[3,3] = _b[tenure]
-timer off 33
+timer on 30 // total ~ 7 minutes (4+1+2)
+forvalues i = 1/3 {
+  local q = `i'/4
+  timer on 3`i'
+  sivqr ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , quantile(`q') bandwidth(0)
+  matrix res[`i',3] = _b[tenure]
+  timer off 3`i'
+}
 timer off 30
 *
 * ~ 5-10 minutes total for these three ivqreg calls
 preserve //just in case ivqreg does something weird
+* newest version gets error for over-identified model
+capture noisily ivqregDEC ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , q(0.50) robust
 timer on 40
-timer on 41
-capture ivqreg ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , q(0.25) robust
-matrix res[1,4] = _b[tenure]
-timer off 41
-timer on 42
-capture ivqreg ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , q(0.50) robust
-matrix res[2,4] = _b[tenure]
-timer off 42
-timer on 43
-capture ivqreg ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , q(0.75) robust
-matrix res[3,4] = _b[tenure]
-timer off 43
+forvalues i = 1/3 {
+  local q = `i'/4
+  timer on 4`i'
+  capture noisily ivqreg ln_wage age agesq birth_yr grade (tenure = union wks_work msp) , q(`q') robust
+  matrix res[`i',4] = _b[tenure]
+  timer off 4`i'
+}
 timer off 40
 restore
 *
@@ -148,6 +135,13 @@ ivqreg2 ln_wage age agesq birth_yr grade tenure , quantile(0.25 0.5 0.75) instru
 * [no Std. Err. reported]
 * [tenure estimates now negative; other differences]
 timer off 5
+* finally: with single IV, ivqreg v1.0.1 now gets SE, but 10x slower
+timer on 78
+ivqregDEC ln_wage age agesq birth_yr grade (tenure = union ) , q(0.50) robust
+timer off 78
+timer on 79
+ivqreg ln_wage age agesq birth_yr grade (tenure = union ) , q(0.50) robust
+timer off 79
 timer list
 
 

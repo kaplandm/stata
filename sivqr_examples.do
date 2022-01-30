@@ -28,7 +28,7 @@ cls
 * To install other commands/data:
 ssc install bcuse , replace
 *ivqregDEC (Dec. 2010 version): manually from https://sites.google.com/site/dwkwak/dataset-and-code
-*capture do ivqregDEC.mata // create .mlib
+capture do ivqregDEC.mata // create .mlib
 *ivqreg is July 2010 version; works better in most ways, not all
 ssc install ivqreg2 , replace
 

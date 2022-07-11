@@ -3,6 +3,8 @@ d sivqr: Smoothed IV quantile regression
 d {browse "https://kaplandm.github.io":David M. Kaplan}, University of Missouri (Economics)
 d Based on: Kaplan, D. M., and Sun, Y. (2017). Smoothed Estimating Equations for Instrumental Variables Quantile Regression. {it:Journal of Econometrics}, 33(1):105-157.
 d URL: {browse "https://doi.org/10.1017/S0266466615000407"}
+d Also see: Kaplan, D. M. (2022). Smoothed instrumental variables quantile regression. {it:Stata Journal}, 22(2):379-403.
+d URL: {browse "https://doi.org/10.1177/1536867X221106404"}
 d Distribution-Date: 20220122
 d Support: kaplandm@missouri.edu
 f sivqr.ado

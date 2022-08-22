@@ -6,3 +6,4 @@ d Support: kaplandm@missouri.edu
 
 p distcomp Comparing distributions
 p sivqr Smoothed IV quantile regression
+p latentcs Compare two latent distributions given ordinal data

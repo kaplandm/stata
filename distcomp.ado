@@ -1,4 +1,4 @@
-*! version 0.3 10oct2020
+*! version 0.4 22aug2022
 program distcomp, rclass sortpreserve byable(recall)
   version 11
   syntax varname(numeric default=none) [if] [in] , BY(varname) [Alpha(real 0.10) Pvalue noplot GROPTLINE0(string asis) GROPTLINE1(string asis) GROPTTWOWAY(string asis) GROPTREJ(string asis) SAVING(string)]
@@ -18,15 +18,33 @@ program distcomp, rclass sortpreserve byable(recall)
   if !r(N) { //taken from ksmirnov.ado
     error 2000
   }
-  qui tab `by' if `touse' , matrow(vals)
+  qui tab `by' if `touse'
   if r(r) != 2 {
     di as error "`by' takes on " r(r) " values, not 2"
     exit 450
   }
+
+  * Check if `by' is string or numeric; tab , matrow() not supported for string
+  local grpvar "`by'"
+  capture confirm string var `by'
+  if (_rc==0) { //string
+    tempname bynum
+    encode `by' if `touse' , g(`bynum')
+    local grpvar "`bynum'"
+  }
+
+  * Extract group category values
+  tempname vals
+  qui tab `grpvar' if `touse' , matrow(`vals')
+  local v0 = `vals'[1,1]
+  local v1 = `vals'[2,1]
+  local grp0lab : label `grpvar' `v0'
+  local grp1lab : label `grpvar' `v1'
+
   scalar pflag = ("`pvalue'"=="pvalue") // compute global p-value?
 
   * Main subroutine call
-  mata: distcompmain("`varlist'", "`by'", `alpha', "`touse'", GoldmanKaplan2sLookup, "vals", "pflag")
+  mata: distcompmain("`varlist'", "`grpvar'", `alpha', "`touse'", GoldmanKaplan2sLookup, "`vals'", "pflag")
 
   * Store r() values
   return scalar alpha = `alpha'
@@ -48,7 +66,7 @@ program distcomp, rclass sortpreserve byable(recall)
 
   * Display some results
   * Global/GOF results
-  di as text "Comparing distribution of `varlist' when `by'=" vals[2,1] " vs. `by'=" vals[1,1]
+  di as text "Comparing distribution of `varlist' when `by'=`grp1lab' vs. `by'=`grp0lab'"
   di as text " "
   di as text "Global test of equality of two CDFs:"
   if (pflag) {
@@ -99,18 +117,18 @@ program distcomp, rclass sortpreserve byable(recall)
   * Plot ECDFs and indicate rejected ranges graphically
   if ("`plot'"!="noplot") {
     tempvar F0 F1
-    cumul `varlist' if `touse' & `by'==vals[2,1] , g(`F1')
-    cumul `varlist' if `touse' & `by'==vals[1,1] , g(`F0')
-    sort `touse' `by' `varlist' `F0' `F1'
+    cumul `varlist' if `touse' & `grpvar'==`vals'[2,1] , g(`F1')
+    cumul `varlist' if `touse' & `grpvar'==`vals'[1,1] , g(`F0')
+    sort `touse' `grpvar' `varlist' `F0' `F1'
     * OVER 32-CHARACTER LIMIT =( local gname "distcomp_`varlist'_by_`by'_alpha`levperc'_`=_byindex()'"
     local gname "distcomp_`=_byindex()'"
     capture graph drop "`gname'"
-    graph twoway (line `F1' `varlist' if `touse' & `by'==vals[2,1] , connect(stairstep) `groptline1') ///
-                 (line `F0' `varlist' if `touse' & `by'==vals[1,1] , connect(stairstep) `groptline0') ///
-          , name("`gname'") legend(lab(1 "`by'=`=vals[2,1]'") lab(2 "`by'=`=vals[1,1]'")) `gropttwoway'
+    graph twoway (line `F1' `varlist' if `touse' & `grpvar'==`vals'[2,1] , connect(stairstep) `groptline1') ///
+                 (line `F0' `varlist' if `touse' & `grpvar'==`vals'[1,1] , connect(stairstep) `groptline0') ///
+          , name("`gname'") legend(lab(1 "`by'=`grp1lab'") lab(2 "`by'=`grp0lab'")) `gropttwoway'
     if (distcompglobalrej`levperc'>0) {
       forvalues r = 1/``rejrows'' {
-        graph addplot function y=0 , range(`=distcomprejranges[`r',1]' `=distcomprejranges[`r',2]') `groptrej' , legend(order(1 "`by'=`=vals[2,1]'" 2 "`by'=`=vals[1,1]'" 3 "rejected ranges (`levperc'% FWER)"))
+        graph addplot function y=0 , range(`=distcomprejranges[`r',1]' `=distcomprejranges[`r',2]') `groptrej' , legend(order(1 "`by'=`grp1lab'" 2 "`by'=`grp0lab'" 3 "rejected ranges (`levperc'% FWER)"))
         *see https://www.stata.com/statalist/archive/2006-05/msg00249.html
       }
     }

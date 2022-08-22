@@ -1,0 +1,11 @@
+v 3
+d latentcs: Compare two latent distributions given ordinal data
+d {browse "https://kaplandm.github.io":David M. Kaplan}, University of Missouri (Economics)
+d Based on: Kaplan, D. M., and Zhao, W. (2022). Comparing latent inequality with ordinal data.
+d URL: {browse "https://kaplandm.github.io/#ordinal"}
+d Distribution-Date: 20220822
+d Support: kaplandm@missouri.edu
+f latentcs.ado
+f latentcs.sthlp
+f latentcs_examples.do
+e

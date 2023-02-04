@@ -1,4 +1,4 @@
-*! version 1.1.0  22jan2022
+*! version 1.1.1  04feb2023
 program sivqr, eclass properties(svyb) byable(recall)
  version 11
  if (!replay()) {
@@ -135,6 +135,7 @@ program sivqr, eclass properties(svyb) byable(recall)
   if (`reps'>1) {
     ereturn local vcetype Bootstrap
   }
+  ereturn local cmd_line `0'
   ereturn local cmd "sivqr" // should be last to store (according to ereturn entry in Stata Manual)
  }
  else { // replay

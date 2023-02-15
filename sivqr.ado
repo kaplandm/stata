@@ -4,14 +4,14 @@ program sivqr, eclass properties(svyb) byable(recall)
  if (!replay()) {
   * Check for i. and give instructions: ibn. and noconstant
   tempname chki chkibn
-  local `chki' = strpos("`0'","i.")
+  local `chki' = strpos(`"`0'"',"i.")
   if (``chki'') {
     di as error "To use {bf:i.} factor variable syntax for regressors, instead use {bf:ibn.} and add the {bf:noconstant} option"
   }
-  local `chkibn' = strpos("`0'","ibn.")
+  local `chkibn' = strpos(`"`0'"',"ibn.")
 
-  * Save full cmd (for qregplot)
-  local 00 `0'
+  * Save for e(cmdline)
+  local 00 `"sivqr `0'"'
 
   * Parse variables with _iv_parse (as in ivregress.ado)
   _iv_parse `0'
@@ -155,7 +155,7 @@ program sivqr, eclass properties(svyb) byable(recall)
   if (`reps'>1) {
     ereturn local vcetype Bootstrap
   }
-  ereturn local cmd_line `00'
+  ereturn local cmdline `"`00'"'
   ereturn local cmd "sivqr" // should be last to store (according to ereturn entry in Stata Manual)
  }
  else { // replay
@@ -186,7 +186,7 @@ program sivqr, eclass properties(svyb) byable(recall)
     di as text "Instruments:   " e(insts)
   }
 
-  * For compatibility with qregplot
+  * To help compatibility with qregplot
   ereturn local ifin ``qregplot_ifin''
   ereturn local oth  ``qregplot_oth''
 end

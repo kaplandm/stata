@@ -1,7 +1,15 @@
-*! version 1.1.1  04feb2023
+*! version 1.1.2  15feb2023  kaplandm.github.io  (new: qregplot compatibility!)
 program sivqr, eclass properties(svyb) byable(recall)
  version 11
  if (!replay()) {
+  * Check for i. and give instructions: ibn. and noconstant
+  tempname chki chkibn
+  local `chki' = strpos("`0'","i.")
+  if (``chki'') {
+    di as error "To use {bf:i.} factor variable syntax for regressors, instead use {bf:ibn.} and add the {bf:noconstant} option"
+  }
+  local `chkibn' = strpos("`0'","ibn.")
+
   * Parse variables with _iv_parse (as in ivregress.ado)
   _iv_parse `0'
   tempname lhs Xendo Xexog Zexcl
@@ -14,8 +22,17 @@ program sivqr, eclass properties(svyb) byable(recall)
     // could just stop and say to run qreg, but maybe some people want smoothed QR
   }
 
-  * Parse rest of arguments
+  * Parse arguments for qregplot
+  tempname qregplot_ifin qregplot_oth
+  syntax [if] [in] [pweight iweight fweight/] , Quantile(real) *
+  local `qregplot_ifin' `if' `in'
+  local `qregplot_oth' `options'
+
+  * Parse arguments for sivqr
   syntax [if] [in] [pweight iweight fweight/] , Quantile(real) [Bandwidth(real -112358) Level(cilevel) Reps(integer 0) LOGiterations noCONstant SEED(integer 112358) INITial(string) noDOTS]
+  if (``chkibn''>0 & "`constant'"!="noconstant") {
+    di as error "To use {bf:ibn.} factor variable syntax for regressors, add the {bf:noconstant} option"
+  }
   if (`quantile'<=0) {
     di as error "{bf:quantile(`quantile')} is out of range: must be >0"
     exit 198
@@ -69,10 +86,10 @@ program sivqr, eclass properties(svyb) byable(recall)
     * qreg doesn't support noconstant, so adjust after
     if ("`weight'"!="") {
       * Using aweight so can use Stata version 11; o/w need Stata 12 for pw/iw
-      qui qreg ``lhs'' ``Xendo'' ``Xexog'' [aw=`exp'] , quantile(`quantile')
+      qui qreg ``lhs'' ``Xendo'' ``Xexog'' if `touse' [aw=`exp'] , quantile(`quantile')
     }
     else {
-      qui qreg ``lhs'' ``Xendo'' ``Xexog'' , quantile(`quantile')
+      qui qreg ``lhs'' ``Xendo'' ``Xexog'' if `touse' , quantile(`quantile')
     }
     matrix `initname' = e(b)
     if ("`constant'"=="noconstant") {
@@ -165,10 +182,16 @@ program sivqr, eclass properties(svyb) byable(recall)
     di as text "Instrumented:  " e(instd)
     di as text "Instruments:   " e(insts)
   }
+
+  * For compatibility with qregplot
+  ereturn local ifin ``qregplot_ifin''
+  ereturn local oth  ``qregplot_oth''
 end
 *
 *
 *
+* Setting "version" here recommended by https://www.stata.com/manuals/m-2version.pdf
+version 11
 mata:
 void sivqrmain(string scalar Yname, string matrix Dname, string matrix Xexogname, string matrix Zexclname, string scalar touse, real scalar tau, real scalar h, real scalar reps, real scalar logiterations, real scalar noconst, string scalar wgtname, real scalar seed, real scalar nodots, string scalar sivqrbname, string scalar sivqrVname, string scalar sivqrhname, string scalar sivqrhhatname, string scalar sivqrhhatmaxname, string scalar binitname) {
   real colvector Y, binit, weights, sivqrb, wstar, IQRs, hhats
@@ -215,7 +238,7 @@ void sivqrmain(string scalar Yname, string matrix Dname, string matrix Xexogname
   }
 
   if (db<cols(X)) {
-    _error("The matrix (row vector) named in the initial() option is too short.")
+    _error("The matrix (row vector) named in the initial() option is too short; may be due to perfect multicollinearity (try running qreg or ivregress to see if any regressors are dropped due to perfect multicollinearity, then re-run sivqr without those variables)")
   }
   else if (db>cols(X)) {
     _error("The matrix (row vector) named in the initial() option is too long.")
@@ -254,6 +277,7 @@ void sivqrmain(string scalar Yname, string matrix Dname, string matrix Xexogname
     for (i=1; i<=reps; i++) {
       // Dirichlet weights for Bayesian bootstrap
       wstar = rexponential(n,1,1)
+      //wstar = invexponential(1, runiform(n,1))
       wstar = n * wstar / sum(wstar)
       wstar = wstar:*weights
       wstar = n * wstar / sum(wstar)
@@ -393,7 +417,10 @@ real colvector sivqrest(real scalar tau, real colvector Y, real matrix X, real m
   } //end while loop
 
   if (hcur>HMAX) {
-    printf("error in solvenl()")
+    printf("error in solvenl()\n")
+    if (lastec==21) {
+      printf("May be due to perfect multicollinearity; try running qreg or ivregress to see if any regressors are dropped due to perfect multicollinearity, then re-run sivqr without those variables.\n")
+    }
     _error(lastec, lastet)
   }
 

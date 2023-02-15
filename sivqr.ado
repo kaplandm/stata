@@ -10,6 +10,9 @@ program sivqr, eclass properties(svyb) byable(recall)
   }
   local `chkibn' = strpos("`0'","ibn.")
 
+  * Save full cmd (for qregplot)
+  local 00 `0'
+
   * Parse variables with _iv_parse (as in ivregress.ado)
   _iv_parse `0'
   tempname lhs Xendo Xexog Zexcl
@@ -152,7 +155,7 @@ program sivqr, eclass properties(svyb) byable(recall)
   if (`reps'>1) {
     ereturn local vcetype Bootstrap
   }
-  ereturn local cmd_line `0'
+  ereturn local cmd_line `00'
   ereturn local cmd "sivqr" // should be last to store (according to ereturn entry in Stata Manual)
  }
  else { // replay

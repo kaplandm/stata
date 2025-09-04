@@ -1,5 +1,5 @@
 {smcl}
-{* *! version 1.1.0  22jan2022}{...}
+{* *! version 1.1.2  04sep2025}{...}
 {vieweralsosee "[R] ivregress" "help ivregress"}{...}
 {vieweralsosee "[R] qreg" "help qreg"}{...}
 {viewerjumpto "Syntax" "sivqr##syntax"}{...}
@@ -43,7 +43,7 @@ As in {helpb ivregress}, {it:varlist1} is the list of exogenous regressors (or c
 {synopt :{opt q:uantile(#)}}estimate # quantile
 {p_end}
 {synopt :{opt b:andwidth(#)}}manually set smoothing bandwidth; default is to use plug-in bandwidth{p_end}
-{synopt :{opt r:eps(#)}}perform # bootstrap replications; default is {cmd:reps(20)}{p_end}
+{synopt :{opt r:eps(#)}}perform # bootstrap replications; default is {cmd:reps(0)}{p_end}
 {synopt :{opt nocon:stant}}suppress constant term{p_end}
 
 {syntab:Reporting}
